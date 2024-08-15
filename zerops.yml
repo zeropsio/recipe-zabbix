@@ -1,0 +1,36 @@
+zerops:
+  - setup: zabbix
+    build:
+      deployFiles: [.]
+
+    run:
+      os: ubuntu
+      base:  ubuntu@22.04
+      prepareCommands:
+        - sudo wget https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_7.0-2+ubuntu22.04_all.deb
+        - sudo dpkg -i zabbix-release_7.0-2+ubuntu22.04_all.deb
+        - sudo apt-get -y update
+        - sudo apt-get -y install zabbix-server-pgsql zabbix-frontend-php php8.1-pgsql zabbix-nginx-conf zabbix-sql-scripts zabbix-agent
+        - sudo apt-get -y install postgresql-client
+
+      initCommands:
+        - sudo chmod +x /var/www/migrate.sh
+        - /var/www/migrate.sh
+        - sudo cp /var/www/zabbix_server.conf /etc/zabbix/
+        - sudo sed -i 's/pgdb_hostname/'"${pgdb_hostname}"'/g' /etc/zabbix/zabbix_server.conf
+        - sudo sed -i 's/pgdb_user/'"${pgdb_user}"'/g' /etc/zabbix/zabbix_server.conf
+        - sudo sed -i 's/pgdb_password/'"${pgdb_password}"'/g' /etc/zabbix/zabbix_server.conf
+        - sudo cp /var/www/nginx.conf /etc/zabbix/
+        - sudo cp /var/www/zabbix.conf.php /etc/zabbix/web/
+        - sudo sed -i 's/pgdb_hostname/'"${pgdb_hostname}"'/g' /etc/zabbix/web/zabbix.conf.php
+        - sudo sed -i 's/pgdb_user/'"${pgdb_user}"'/g' /etc/zabbix/web/zabbix.conf.php
+        - sudo sed -i 's/pgdb_password/'"${pgdb_password}"'/g' /etc/zabbix/web/zabbix.conf.php
+        - sudo systemctl daemon-reload
+        - sudo systemctl restart zabbix-server zabbix-agent nginx php8.1-fpm
+        - sudo systemctl enable zabbix-server zabbix-agent nginx php8.1-fpm
+
+      ports:
+        - port: 8080
+          httpSupport: true
+  
+      start: while true; do sleep 10000; done

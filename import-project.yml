@@ -1,0 +1,14 @@
+project:
+  name: recipe-zabbix
+services:
+  - hostname: pgdb
+    type: postgresql@16
+    mode: HA
+    priority: 10
+  
+  - hostname: zabbix
+    type: ubuntu@22.04
+    enableSubdomainAccess: true
+    buildFromGit: "https://github.com/zeropsio/recipe-zabbix"
+    zeropsSetup: zabbix
+    priority: 1
