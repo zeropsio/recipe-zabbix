@@ -1,6 +1,7 @@
 # Zerops x Zabbix
 
 [Zabbix](https://www.zabbix.com/) is self-hosted monitoring and visualization software.
+
 ![Zabbix](https://github.com/zeropsio/recipe-shared-assets/blob/main/covers/svg/cover-zabbix.svg)
 
 ## Prerequisites
